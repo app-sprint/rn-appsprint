@@ -91,7 +91,14 @@ The SDK doesn't talk to the API directly — it delegates to the native modules 
 
 - `ci.yml` — Typecheck + test on push to main and PRs
 - `discord-notify.yml` — Post commit info to Discord
-- `release.yml` — Build, test, publish to npm on `v*` tags
+- `release.yml` — On `v*` tag: build, test, validate binaries, publish to npm with OIDC provenance
+
+### npm Publishing
+
+- **Package:** `appsprint-react-native` on npm
+- **Auth:** Trusted Publishing (OIDC) — no `NPM_TOKEN` needed, CI uses `id-token: write` permission
+- **Provenance:** Published with `--provenance` flag for supply chain transparency
+- Consumers install via: `npm install appsprint-react-native`
 
 ---
 
