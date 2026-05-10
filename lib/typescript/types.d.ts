@@ -7,19 +7,36 @@ export interface AppSprintConfig {
     customerUserId?: string | null;
 }
 export type LogLevel = 0 | 1 | 2 | 3;
-export type EventType = "login" | "sign_up" | "register" | "purchase" | "subscribe" | "start_trial" | "add_to_cart" | "add_to_wishlist" | "initiate_checkout" | "view_content" | "view_item" | "search" | "share" | "tutorial_complete" | "level_start" | "level_complete" | "custom";
+export type EventType = "session_start" | "login" | "sign_up" | "register" | "purchase" | "subscribe" | "start_trial" | "add_to_cart" | "add_to_wishlist" | "initiate_checkout" | "view_content" | "view_item" | "search" | "share" | "tutorial_complete" | "level_start" | "level_complete" | "custom";
 export interface EventParams {
     revenue?: number;
     currency?: string;
     [key: string]: unknown;
 }
+export interface AttributionLink {
+    id: string;
+    name: string;
+}
+export interface AppleAdsAttribution {
+    campaignId: string;
+    adGroupId?: string | null;
+    keywordId?: string | null;
+    countryOrRegion?: string | null;
+    conversionType?: string | null;
+}
 export interface AttributionResult {
-    source: "apple_ads" | "fingerprint" | "organic";
-    confidence: number;
-    campaignName?: string;
+    isAttributed?: boolean;
+    source?: "tracking_link" | "apple_ads" | "organic" | "fingerprint" | string;
+    matchType?: "idfa" | "idfv" | "ip_user_agent" | "apple_ads" | "organic" | string;
+    link?: AttributionLink | null;
+    appleAds?: AppleAdsAttribution | null;
+    confidence?: number;
+    campaignName?: string | null;
     utmSource?: string;
     utmMedium?: string;
     utmCampaign?: string;
+    utmContent?: string | null;
+    utmTerm?: string | null;
 }
 export interface InstallResponse {
     appsprintId: string;
@@ -36,9 +53,11 @@ export interface DeviceInfo {
     locale?: string;
     timezone?: string;
     osVersion?: string;
+    appVersion?: string;
     idfv?: string;
     idfa?: string;
     adServicesToken?: string;
+    attStatus?: "not_determined" | "restricted" | "denied" | "authorized";
 }
 export interface NativeAppSprintModule {
     configure(config: Record<string, unknown>): Promise<void>;

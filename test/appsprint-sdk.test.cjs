@@ -105,7 +105,13 @@ test("getAppSprintId returns value from native module", async () => {
 });
 
 test("getAttribution returns value from native module", async () => {
-  const attr = { source: "apple_ads", confidence: 0.98 };
+  const attr = {
+    isAttributed: true,
+    source: "tracking_link",
+    matchType: "ip_user_agent",
+    link: { id: "link_123", name: "Spring Campaign" },
+    utmSource: "newsletter",
+  };
   const ctx = createSdkTestContext({
     resolvedValues: { getAttribution: attr },
   });

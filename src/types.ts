@@ -10,6 +10,7 @@ export interface AppSprintConfig {
 export type LogLevel = 0 | 1 | 2 | 3;
 
 export type EventType =
+  | "session_start"
   | "login"
   | "sign_up"
   | "register"
@@ -34,13 +35,32 @@ export interface EventParams {
   [key: string]: unknown;
 }
 
+export interface AttributionLink {
+  id: string;
+  name: string;
+}
+
+export interface AppleAdsAttribution {
+  campaignId: string;
+  adGroupId?: string | null;
+  keywordId?: string | null;
+  countryOrRegion?: string | null;
+  conversionType?: string | null;
+}
+
 export interface AttributionResult {
-  source: "apple_ads" | "fingerprint" | "organic";
-  confidence: number;
-  campaignName?: string;
+  isAttributed?: boolean;
+  source?: "tracking_link" | "apple_ads" | "organic" | "fingerprint" | string;
+  matchType?: "idfa" | "idfv" | "ip_user_agent" | "apple_ads" | "organic" | string;
+  link?: AttributionLink | null;
+  appleAds?: AppleAdsAttribution | null;
+  confidence?: number;
+  campaignName?: string | null;
   utmSource?: string;
   utmMedium?: string;
   utmCampaign?: string;
+  utmContent?: string | null;
+  utmTerm?: string | null;
 }
 
 export interface InstallResponse {
@@ -60,9 +80,11 @@ export interface DeviceInfo {
   locale?: string;
   timezone?: string;
   osVersion?: string;
+  appVersion?: string;
   idfv?: string;
   idfa?: string;
   adServicesToken?: string;
+  attStatus?: "not_determined" | "restricted" | "denied" | "authorized";
 }
 
 export interface NativeAppSprintModule {

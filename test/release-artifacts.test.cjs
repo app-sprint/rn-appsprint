@@ -35,3 +35,21 @@ test("package metadata reflects the binary-backed distribution contract", () => 
   assert.equal(packageJson.files.includes("!lib/**/*.map"), true);
   assert.deepEqual(packageJson.expo?.plugins, ["./app.plugin.js"]);
 });
+
+test("android network permission is packaged for consumers", () => {
+  const manifest = fs.readFileSync(
+    path.join(projectRoot, "android/src/main/AndroidManifest.xml"),
+    "utf8"
+  );
+  const plugin = fs.readFileSync(
+    path.join(projectRoot, "plugin/build/index.js"),
+    "utf8"
+  );
+
+  assert.match(manifest, /android\.permission\.INTERNET/);
+  assert.match(plugin, /android\.permission\.INTERNET/);
+  assert.doesNotMatch(manifest, /com\.google\.android\.gms\.permission\.AD_ID/);
+  assert.doesNotMatch(plugin, /com\.google\.android\.gms\.permission\.AD_ID/);
+
+  assert.match(plugin, /withAndroidManifest/);
+});
