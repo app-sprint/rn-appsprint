@@ -5,7 +5,10 @@ const { withAndroidManifest, withInfoPlist } = require("@expo/config-plugins");
 const DEFAULT_TRACKING_DESCRIPTION =
   "This identifier will be used to deliver personalized ads to you.";
 
-const ANDROID_PERMISSIONS = ["android.permission.INTERNET"];
+const ANDROID_PERMISSIONS = [
+  "android.permission.INTERNET",
+  "com.google.android.gms.permission.AD_ID",
+];
 
 function ensureAndroidPermission(androidManifest, permissionName) {
   const permissions = androidManifest.manifest["uses-permission"] ?? [];

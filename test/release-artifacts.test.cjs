@@ -36,7 +36,7 @@ test("package metadata reflects the binary-backed distribution contract", () => 
   assert.deepEqual(packageJson.expo?.plugins, ["./app.plugin.js"]);
 });
 
-test("android network permission is packaged for consumers", () => {
+test("android permissions are packaged for consumers", () => {
   const manifest = fs.readFileSync(
     path.join(projectRoot, "android/src/main/AndroidManifest.xml"),
     "utf8"
@@ -48,8 +48,8 @@ test("android network permission is packaged for consumers", () => {
 
   assert.match(manifest, /android\.permission\.INTERNET/);
   assert.match(plugin, /android\.permission\.INTERNET/);
-  assert.doesNotMatch(manifest, /com\.google\.android\.gms\.permission\.AD_ID/);
-  assert.doesNotMatch(plugin, /com\.google\.android\.gms\.permission\.AD_ID/);
+  assert.match(manifest, /com\.google\.android\.gms\.permission\.AD_ID/);
+  assert.match(plugin, /com\.google\.android\.gms\.permission\.AD_ID/);
 
   assert.match(plugin, /withAndroidManifest/);
 });

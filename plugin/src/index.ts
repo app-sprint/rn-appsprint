@@ -14,7 +14,10 @@ type AndroidManifest = {
   };
 };
 
-const ANDROID_PERMISSIONS = ["android.permission.INTERNET"];
+const ANDROID_PERMISSIONS = [
+  "android.permission.INTERNET",
+  "com.google.android.gms.permission.AD_ID",
+];
 
 function ensureAndroidPermission(
   androidManifest: AndroidManifest,

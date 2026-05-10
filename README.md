@@ -38,6 +38,12 @@ Plugin options:
 | `trackingDescription` | `string` | ATT permission dialog text for `NSUserTrackingUsageDescription` | `"This identifier will be used to deliver personalized ads to you."` |
 | `advertisingAttributionEndpoint` | `string` | Sets `NSAdvertisingAttributionReportEndpoint` | — |
 
+### Android permissions and privacy
+
+The Android package declares `android.permission.INTERNET` and `com.google.android.gms.permission.AD_ID`. The Expo config plugin injects both permissions during prebuild. The native Android SDK reads the Google Advertising ID during install registration, omits it when Limit Ad Tracking is enabled, and never sends the all-zero advertising ID.
+
+If you publish an Android app with this SDK, include advertising ID collection in your Play Console Data safety answers and privacy policy.
+
 ## Quick start
 
 Initialize the SDK as early as possible in app startup:

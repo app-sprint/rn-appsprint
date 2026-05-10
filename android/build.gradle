@@ -36,4 +36,5 @@ dependencies {
   implementation "com.facebook.react:react-android:+"
   implementation files('libs/appsprint-sdk.aar')
   implementation "androidx.lifecycle:lifecycle-process:2.8.7"
+  implementation "com.google.android.gms:play-services-ads-identifier:18.0.1"
 }

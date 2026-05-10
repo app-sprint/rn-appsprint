@@ -81,6 +81,7 @@ export interface DeviceInfo {
   timezone?: string;
   osVersion?: string;
   appVersion?: string;
+  gaid?: string;
   idfv?: string;
   idfa?: string;
   adServicesToken?: string;
