@@ -11,7 +11,16 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
 
     override fun getName(): String = "AppSprintModule"
 
+    @Volatile private var cachedSdk: AppSprint? = null
+
     private fun sdk(): AppSprint {
+        cachedSdk?.let { return it }
+        return synchronized(this) {
+            cachedSdk ?: resolveSdk().also { cachedSdk = it }
+        }
+    }
+
+    private fun resolveSdk(): AppSprint {
         val sdkClass = AppSprint::class.java
 
         runCatching {
@@ -28,9 +37,17 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
         thread(start = true) {
             try {
                 block()
-            } catch (e: Exception) {
-                promise.reject(code, e.message, e)
+            } catch (t: Throwable) {
+                promise.reject(code, t.message, t)
             }
+        }
+    }
+
+    private fun resolveSync(code: String, promise: Promise, block: () -> Any?) {
+        try {
+            promise.resolve(block())
+        } catch (t: Throwable) {
+            promise.reject(code, t.message, t)
         }
     }
 
@@ -64,7 +81,7 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
             val type = AppSprintEventType.entries.find { it.wireValue == eventType } ?: AppSprintEventType.CUSTOM
             val params = mutableMapOf<String, Any?>()
             parameters?.toHashMap()?.forEach { (key, value) -> params[key] = value }
-            if (revenue != null && revenue != 0.0) params["revenue"] = revenue
+            if (revenue != null) params["revenue"] = revenue
             if (currency != null) params["currency"] = currency
             sdk().sendEvent(type, name, if (params.isNotEmpty()) params else null)
             promise.resolve(true)
@@ -115,24 +132,23 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
 
     @ReactMethod
     fun getAppSprintId(promise: Promise) {
-        promise.resolve(sdk().getAppSprintId())
+        resolveSync("GET_APPSPRINT_ID_ERROR", promise) { sdk().getAppSprintId() }
     }
 
     @ReactMethod
     fun getAttribution(promise: Promise) {
-        val attr = sdk().getAttribution()
-        if (attr == null) {
-            promise.resolve(null)
-            return
+        resolveSync("GET_ATTRIBUTION_ERROR", promise) {
+            sdk().getAttribution()?.let { attributionToMap(it) }
         }
-        promise.resolve(attributionToMap(attr))
     }
 
     @ReactMethod
     fun getAttributionParams(promise: Promise) {
-        val map = Arguments.createMap()
-        sdk().getAttributionParams().forEach { (key, value) -> map.putString(key, value) }
-        promise.resolve(map)
+        resolveSync("GET_ATTRIBUTION_PARAMS_ERROR", promise) {
+            val map = Arguments.createMap()
+            sdk().getAttributionParams().forEach { (key, value) -> map.putString(key, value) }
+            map
+        }
     }
 
     private fun attributionToMap(attr: AttributionResult): WritableMap {
@@ -167,12 +183,12 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
 
     @ReactMethod
     fun isInitialized(promise: Promise) {
-        promise.resolve(sdk().isInitialized())
+        resolveSync("IS_INITIALIZED_ERROR", promise) { sdk().isInitialized() }
     }
 
     @ReactMethod
     fun isSdkDisabled(promise: Promise) {
-        promise.resolve(sdk().isSdkDisabled())
+        resolveSync("SDK_DISABLED_ERROR", promise) { sdk().isSdkDisabled() }
     }
 
     @ReactMethod

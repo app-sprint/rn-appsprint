@@ -94,6 +94,61 @@ test("sendEvent accepts price as revenue fallback", async () => {
   }
 });
 
+test("sendEvent supports Appstack parity event names", async () => {
+  const ctx = createSdkTestContext();
+
+  try {
+    await ctx.sdk.AppSprint.sendEvent("ADD_PAYMENT_INFO");
+    await ctx.sdk.AppSprint.sendEvent("achieve-level");
+
+    const sendCalls = ctx.calls.filter((c) => c.method === "sendEvent");
+    assert.equal(sendCalls[0].args[0], "add_payment_info");
+    assert.equal(sendCalls[1].args[0], "achieve_level");
+  } finally {
+    ctx.restore();
+  }
+});
+
+test("sendEvent preserves zero revenue", async () => {
+  const ctx = createSdkTestContext();
+
+  try {
+    await ctx.sdk.AppSprint.sendEvent("purchase", "trial_start", {
+      revenue: 0,
+      currency: "USD",
+    });
+
+    const sendCall = ctx.calls.find((c) => c.method === "sendEvent");
+    assert.ok(sendCall);
+    assert.equal(sendCall.args[2], 0);
+    assert.equal(sendCall.args[3], "USD");
+  } finally {
+    ctx.restore();
+  }
+});
+
+test("sendEvent drops non-finite revenue before native bridge", async () => {
+  const ctx = createSdkTestContext();
+
+  try {
+    await ctx.sdk.AppSprint.sendEvent("purchase", "bad_number", {
+      revenue: Number.NaN,
+      currency: "USD",
+    });
+    await ctx.sdk.AppSprint.sendEvent("purchase", "bad_price", {
+      price: Number.POSITIVE_INFINITY,
+      currency: "USD",
+    });
+
+    const sendCalls = ctx.calls.filter((c) => c.method === "sendEvent");
+    assert.equal(sendCalls.length, 2);
+    assert.equal(sendCalls[0].args[2], null);
+    assert.equal(sendCalls[1].args[2], null);
+  } finally {
+    ctx.restore();
+  }
+});
+
 test("sendEvent handles null name and params", async () => {
   const ctx = createSdkTestContext();
 

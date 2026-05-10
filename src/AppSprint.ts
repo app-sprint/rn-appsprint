@@ -14,7 +14,7 @@ function normalizeEventType(eventType: EventType | string): string {
 
 function revenueValue(params?: EventParams): number | null {
   const value = params?.revenue ?? params?.price;
-  if (typeof value === "number") return value;
+  if (typeof value === "number") return Number.isFinite(value) ? value : null;
   if (typeof value === "string" && value.trim().length > 0) {
     const parsed = Number(value);
     return Number.isFinite(parsed) ? parsed : null;
