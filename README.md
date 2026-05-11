@@ -7,19 +7,21 @@ Mobile attribution and event tracking for React Native, with native iOS and Andr
 - React Native 0.71 or later
 - React 18 or later
 - iOS 14.0 or later
-- Android 5.0 (API 21) or later
+- Android 7.0 (API 24) or later
 
 ## Install
 
 ```bash
-npm install appsprint-react-native
+npm install getappsprint/appsprint-react-native#v1.0.1
 ```
 
 or
 
 ```bash
-yarn add appsprint-react-native
+yarn add getappsprint/appsprint-react-native#v1.0.1
 ```
+
+The npm package name is reserved for the public release. Until npm publishing is unblocked, install from the GitHub tag above.
 
 ### iOS
 
@@ -31,7 +33,7 @@ The native pod is vendored inside the package, so no extra repository setup is n
 
 ### Android
 
-Auto-linking handles the Android side. The package's manifest declares `INTERNET`, `ACCESS_NETWORK_STATE`, and `com.google.android.gms.permission.AD_ID`, which merge into your app at build time.
+Auto-linking handles the Android side. The package's manifest declares `INTERNET` and `com.google.android.gms.permission.AD_ID`, which merge into your app at build time.
 
 ### Expo
 

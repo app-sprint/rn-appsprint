@@ -5,6 +5,18 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.1 - 2026-05-11
+
+### Added
+- Google Ads consent configuration and event payload parity.
+- Full Apple Ads attribution fields exposed through the bridge.
+
+### Fixed
+- Updated vendored native binaries with Android v1.0.1 and rebuilt iOS XCFramework.
+- Completed `getDeviceInfo()` parity for app version, GAID, IDFV/IDFA, AdServices token, and ATT status where platform-available.
+- Replaced per-call Android bridge threads with a bounded bridge executor.
+- Pointed temporary install instructions at the GitHub `v1.0.1` tag while npm publishing is blocked.
+
 ## 1.0.0 - 2026-05-11
 
 ### Added
