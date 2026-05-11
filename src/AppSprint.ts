@@ -1,6 +1,7 @@
 import { NativeAppSprint } from "./NativeAppSprint";
 import type {
   AppSprintConfig,
+  AppSprintOptions,
   AttributionParams,
   AttributionResult,
   EventParams,
@@ -12,8 +13,30 @@ function normalizeEventType(eventType: EventType | string): string {
   return eventType.toLowerCase().replace(/-/g, "_");
 }
 
-function revenueValue(params?: EventParams): number | null {
-  const value = params?.revenue ?? params?.price;
+const STANDARD_EVENT_TYPES = new Set([
+  "session_start",
+  "login",
+  "sign_up",
+  "register",
+  "purchase",
+  "subscribe",
+  "start_trial",
+  "add_payment_info",
+  "add_to_cart",
+  "add_to_wishlist",
+  "initiate_checkout",
+  "view_content",
+  "view_item",
+  "search",
+  "share",
+  "tutorial_complete",
+  "achieve_level",
+  "level_start",
+  "level_complete",
+  "custom",
+]);
+
+function numericValue(value: unknown): number | null {
   if (typeof value === "number") return Number.isFinite(value) ? value : null;
   if (typeof value === "string" && value.trim().length > 0) {
     const parsed = Number(value);
@@ -22,8 +45,28 @@ function revenueValue(params?: EventParams): number | null {
   return null;
 }
 
+function revenueValue(params?: EventParams): number | null {
+  return numericValue(params?.revenue) ?? numericValue(params?.price);
+}
+
+function normalizeConfig(
+  configOrApiKey: AppSprintConfig | string,
+  options: AppSprintOptions = {}
+): AppSprintConfig {
+  const config =
+    typeof configOrApiKey === "string"
+      ? { ...options, apiKey: configOrApiKey }
+      : configOrApiKey;
+  const apiUrl = config.apiUrl ?? config.endpointBaseUrl;
+  return apiUrl ? { ...config, apiUrl } : config;
+}
+
 class AppSprintSDK {
-  async configure(config: AppSprintConfig): Promise<boolean> {
+  async configure(
+    configOrApiKey: AppSprintConfig | string,
+    options: AppSprintOptions = {}
+  ): Promise<boolean> {
+    const config = normalizeConfig(configOrApiKey, options);
     if (typeof config.apiKey !== "string" || config.apiKey.trim().length === 0) {
       throw new Error("AppSprint.configure requires a non-empty apiKey.");
     }
@@ -36,9 +79,18 @@ class AppSprintSDK {
     name?: string | null,
     params?: EventParams
   ): Promise<boolean> {
+    const normalizedEventType = normalizeEventType(eventType);
+    const nativeEventType = STANDARD_EVENT_TYPES.has(normalizedEventType)
+      ? normalizedEventType
+      : "custom";
+    const nativeName =
+      nativeEventType === "custom" && normalizedEventType !== "custom"
+        ? name ?? normalizedEventType
+        : name ?? null;
+
     return NativeAppSprint.sendEvent(
-      normalizeEventType(eventType),
-      name ?? null,
+      nativeEventType,
+      nativeName,
       revenueValue(params),
       params?.currency ?? null,
       params ?? null

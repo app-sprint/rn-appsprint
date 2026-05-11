@@ -64,7 +64,11 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
         runAsync("CONFIGURE_ERROR", promise) {
             val sdkConfig = AppSprintConfig(
                 apiKey = apiKey,
-                apiUrl = if (config.hasKey("apiUrl")) config.getString("apiUrl") ?: "https://api.appsprint.app" else "https://api.appsprint.app",
+                apiUrl = when {
+                    config.hasKey("apiUrl") -> config.getString("apiUrl") ?: "https://api.appsprint.app"
+                    config.hasKey("endpointBaseUrl") -> config.getString("endpointBaseUrl") ?: "https://api.appsprint.app"
+                    else -> "https://api.appsprint.app"
+                },
                 enableAppleAdsAttribution = if (config.hasKey("enableAppleAdsAttribution")) config.getBoolean("enableAppleAdsAttribution") else true,
                 isDebug = if (config.hasKey("isDebug")) config.getBoolean("isDebug") else false,
                 logLevel = if (config.hasKey("logLevel")) config.getInt("logLevel") else if (config.hasKey("isDebug") && config.getBoolean("isDebug")) 0 else 2,

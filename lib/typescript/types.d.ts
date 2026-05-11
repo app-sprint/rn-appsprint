@@ -1,17 +1,23 @@
 export interface AppSprintConfig {
     apiKey: string;
     apiUrl?: string;
+    endpointBaseUrl?: string;
     enableAppleAdsAttribution?: boolean;
     isDebug?: boolean;
     logLevel?: 0 | 1 | 2 | 3;
     customerUserId?: string | null;
 }
+export type AppSprintOptions = Omit<AppSprintConfig, "apiKey">;
 export type LogLevel = 0 | 1 | 2 | 3;
 export type EventType = "session_start" | "SESSION_START" | "login" | "LOGIN" | "sign_up" | "SIGN_UP" | "register" | "REGISTER" | "purchase" | "PURCHASE" | "subscribe" | "SUBSCRIBE" | "start_trial" | "START_TRIAL" | "add_payment_info" | "ADD_PAYMENT_INFO" | "add_to_cart" | "ADD_TO_CART" | "add_to_wishlist" | "ADD_TO_WISHLIST" | "initiate_checkout" | "INITIATE_CHECKOUT" | "view_content" | "VIEW_CONTENT" | "view_item" | "VIEW_ITEM" | "search" | "SEARCH" | "share" | "SHARE" | "tutorial_complete" | "TUTORIAL_COMPLETE" | "achieve_level" | "ACHIEVE_LEVEL" | "level_start" | "LEVEL_START" | "level_complete" | "LEVEL_COMPLETE" | "custom" | "CUSTOM";
 export interface EventParams {
     revenue?: number;
     price?: number | string;
     currency?: string;
+    email?: string;
+    name?: string;
+    phone_number?: string;
+    date_of_birth?: string;
     [key: string]: unknown;
 }
 export type AttributionParams = Record<string, string>;

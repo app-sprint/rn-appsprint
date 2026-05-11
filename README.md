@@ -14,6 +14,8 @@ npm install appsprint-react-native
 cd ios && pod install
 ```
 
+For bare React Native apps, add `NSUserTrackingUsageDescription` to the host app's `Info.plist` before calling the ATT helper. If you use SKAdNetwork postbacks, configure `NSAdvertisingAttributionReportEndpoint` in the host app according to your App Store attribution setup. Expo prebuild users can set these through the config plugin below.
+
 ## Expo config plugin
 
 If you use Expo prebuild, add the plugin to your app config:
@@ -40,9 +42,11 @@ Plugin options:
 
 ### Android permissions and privacy
 
-The Android package declares `android.permission.INTERNET` and `com.google.android.gms.permission.AD_ID`. The Expo config plugin injects both permissions during prebuild. The native Android SDK reads the Google Advertising ID during install registration, omits it when Limit Ad Tracking is enabled, and never sends the all-zero advertising ID.
+The Android package declares `android.permission.INTERNET`, `android.permission.ACCESS_NETWORK_STATE`, and `com.google.android.gms.permission.AD_ID`. The Expo config plugin injects these permissions during prebuild. The native Android SDK reads the Google Advertising ID during install registration, omits it when Limit Ad Tracking is enabled, and never sends the all-zero advertising ID.
 
 If you publish an Android app with this SDK, include advertising ID collection in your Play Console Data safety answers and privacy policy.
+
+If your app is not allowed to collect advertising IDs, remove `com.google.android.gms.permission.AD_ID` from the host app manifest with `tools:node="remove"`.
 
 ## Quick start
 
@@ -62,6 +66,7 @@ await AppSprint.configure({
 |---|---|---|---|
 | `apiKey` | `string` | Yes | — |
 | `apiUrl` | `string` | No | `https://api.appsprint.app` |
+| `endpointBaseUrl` | `string` | No | alias for `apiUrl` |
 | `enableAppleAdsAttribution` | `boolean` | No | `true` |
 | `isDebug` | `boolean` | No | `false` |
 | `logLevel` | `0 \| 1 \| 2 \| 3` | No | `2` |

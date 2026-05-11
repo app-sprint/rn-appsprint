@@ -1,12 +1,14 @@
 export interface AppSprintConfig {
   apiKey: string;
   apiUrl?: string; // defaults to https://api.appsprint.app
+  endpointBaseUrl?: string; // Appstack-compatible alias for apiUrl
   enableAppleAdsAttribution?: boolean;
   isDebug?: boolean;
   logLevel?: 0 | 1 | 2 | 3; // 0=DEBUG, 1=INFO, 2=WARN, 3=ERROR
   customerUserId?: string | null;
 }
 
+export type AppSprintOptions = Omit<AppSprintConfig, "apiKey">;
 export type LogLevel = 0 | 1 | 2 | 3;
 
 export type EventType =
@@ -55,6 +57,10 @@ export interface EventParams {
   revenue?: number;
   price?: number | string;
   currency?: string;
+  email?: string;
+  name?: string;
+  phone_number?: string;
+  date_of_birth?: string;
   [key: string]: unknown;
 }
 

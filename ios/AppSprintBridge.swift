@@ -19,7 +19,7 @@ class AppSprintBridge: NSObject {
     }
 
     Task { @MainActor in
-      let apiUrl = config["apiUrl"] as? String
+      let apiUrl = (config["apiUrl"] as? String) ?? (config["endpointBaseUrl"] as? String)
       let enableAppleAds = config["enableAppleAdsAttribution"] as? Bool ?? true
       let isDebug = config["isDebug"] as? Bool ?? false
       let logLevelRaw = config["logLevel"] as? Int

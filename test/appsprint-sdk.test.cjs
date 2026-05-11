@@ -49,6 +49,26 @@ test("configure delegates to native module", async () => {
   }
 });
 
+test("configure accepts Appstack-style apiKey and options", async () => {
+  const ctx = createSdkTestContext();
+
+  try {
+    const configured = await ctx.sdk.AppSprint.configure("test-key", {
+      endpointBaseUrl: "https://edge.example.com",
+      isDebug: true,
+    });
+
+    const configCall = ctx.calls.find((c) => c.method === "configure");
+    assert.ok(configCall, "configure was called on native module");
+    assert.equal(configured, true);
+    assert.equal(configCall.args[0].apiKey, "test-key");
+    assert.equal(configCall.args[0].apiUrl, "https://edge.example.com");
+    assert.equal(configCall.args[0].isDebug, true);
+  } finally {
+    ctx.restore();
+  }
+});
+
 test("sendEvent delegates with correct parameters", async () => {
   const ctx = createSdkTestContext();
 
@@ -144,6 +164,39 @@ test("sendEvent drops non-finite revenue before native bridge", async () => {
     assert.equal(sendCalls.length, 2);
     assert.equal(sendCalls[0].args[2], null);
     assert.equal(sendCalls[1].args[2], null);
+  } finally {
+    ctx.restore();
+  }
+});
+
+test("sendEvent falls back to price when revenue is non-finite", async () => {
+  const ctx = createSdkTestContext();
+
+  try {
+    await ctx.sdk.AppSprint.sendEvent("purchase", "checkout", {
+      revenue: Number.NaN,
+      price: "9.99",
+      currency: "USD",
+    });
+
+    const sendCall = ctx.calls.find((c) => c.method === "sendEvent");
+    assert.ok(sendCall);
+    assert.equal(sendCall.args[2], 9.99);
+  } finally {
+    ctx.restore();
+  }
+});
+
+test("sendEvent preserves unknown strings as custom event names", async () => {
+  const ctx = createSdkTestContext();
+
+  try {
+    await ctx.sdk.AppSprint.sendEvent("purcase");
+
+    const sendCall = ctx.calls.find((c) => c.method === "sendEvent");
+    assert.ok(sendCall);
+    assert.equal(sendCall.args[0], "custom");
+    assert.equal(sendCall.args[1], "purcase");
   } finally {
     ctx.restore();
   }

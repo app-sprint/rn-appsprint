@@ -1,6 +1,6 @@
-import type { AppSprintConfig, AttributionParams, AttributionResult, EventParams, EventType, TestEventResult } from "./types";
+import type { AppSprintConfig, AppSprintOptions, AttributionParams, AttributionResult, EventParams, EventType, TestEventResult } from "./types";
 declare class AppSprintSDK {
-    configure(config: AppSprintConfig): Promise<boolean>;
+    configure(configOrApiKey: AppSprintConfig | string, options?: AppSprintOptions): Promise<boolean>;
     sendEvent(eventType: EventType | string, name?: string | null, params?: EventParams): Promise<boolean>;
     sendTestEvent(): Promise<TestEventResult>;
     flush(): Promise<void>;
