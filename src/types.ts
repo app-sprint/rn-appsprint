@@ -8,6 +8,7 @@ export interface AppSprintConfig {
   customerUserId?: string | null;
   autoTrackSessions?: boolean;
   autoRefreshAttribution?: boolean;
+  googleAdsConsent?: GoogleAdsConsent | null;
 }
 
 export type AppSprintOptions = Omit<AppSprintConfig, "apiKey">;
@@ -55,10 +56,24 @@ export type EventType =
   | "custom"
   | "CUSTOM";
 
+export type GoogleAdsConsentStatus =
+  | "GRANTED"
+  | "DENIED"
+  | "UNSPECIFIED"
+  | "granted"
+  | "denied"
+  | "unspecified";
+
+export interface GoogleAdsConsent {
+  adUserData: GoogleAdsConsentStatus;
+}
+
 export interface EventParams {
   revenue?: number;
   price?: number | string;
   currency?: string;
+  googleAdsConsent?: GoogleAdsConsent | null;
+  googleAdsAdUserDataConsent?: GoogleAdsConsentStatus;
   email?: string;
   name?: string;
   phone_number?: string;
@@ -75,10 +90,16 @@ export interface AttributionLink {
 
 export interface AppleAdsAttribution {
   campaignId: string;
+  orgId?: string | null;
   adGroupId?: string | null;
   keywordId?: string | null;
+  adId?: string | null;
   countryOrRegion?: string | null;
+  claimType?: string | null;
+  clickDate?: string | null;
+  impressionDate?: string | null;
   conversionType?: string | null;
+  supplyPlacement?: string | null;
 }
 
 export interface AttributionResult {

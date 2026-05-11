@@ -26,6 +26,7 @@ class AppSprintBridge: NSObject {
       let customerUserId = config["customerUserId"] as? String
       let autoTrackSessions = config["autoTrackSessions"] as? Bool ?? true
       let autoRefreshAttribution = config["autoRefreshAttribution"] as? Bool ?? true
+      let googleAdsConsent = Self.googleAdsConsent(from: config["googleAdsConsent"])
 
       let logLevel: AppSprintLogLevel
       if let raw = logLevelRaw, let level = AppSprintLogLevel(rawValue: raw) {
@@ -41,7 +42,8 @@ class AppSprintBridge: NSObject {
         logLevel: logLevel,
         customerUserId: customerUserId,
         autoTrackSessions: autoTrackSessions,
-        autoRefreshAttribution: autoRefreshAttribution
+        autoRefreshAttribution: autoRefreshAttribution,
+        googleAdsConsent: googleAdsConsent
       )
 
       if let urlString = apiUrl, let url = URL(string: urlString) {
@@ -53,7 +55,8 @@ class AppSprintBridge: NSObject {
           logLevel: logLevel,
           customerUserId: customerUserId,
           autoTrackSessions: autoTrackSessions,
-          autoRefreshAttribution: autoRefreshAttribution
+          autoRefreshAttribution: autoRefreshAttribution,
+          googleAdsConsent: googleAdsConsent
         )
       }
 
@@ -202,9 +205,11 @@ class AppSprintBridge: NSObject {
       if let l = info.locale { dict["locale"] = l }
       if let t = info.timezone { dict["timezone"] = t }
       if let o = info.osVersion { dict["osVersion"] = o }
+      if let appVersion = info.appVersion { dict["appVersion"] = appVersion }
       if let v = info.idfv { dict["idfv"] = v }
       if let a = info.idfa { dict["idfa"] = a }
       if let token = info.adServicesToken { dict["adServicesToken"] = token }
+      if let attStatus = info.attStatus { dict["attStatus"] = attStatus.rawValue }
       resolve(dict)
     }
   }
@@ -236,10 +241,16 @@ class AppSprintBridge: NSObject {
     }
     if let appleAds = attr.appleAds {
       var apple: [String: Any] = ["campaignId": appleAds.campaignId]
+      if let orgId = appleAds.orgId { apple["orgId"] = orgId }
       if let adGroupId = appleAds.adGroupId { apple["adGroupId"] = adGroupId }
       if let keywordId = appleAds.keywordId { apple["keywordId"] = keywordId }
+      if let adId = appleAds.adId { apple["adId"] = adId }
       if let country = appleAds.countryOrRegion { apple["countryOrRegion"] = country }
+      if let claimType = appleAds.claimType { apple["claimType"] = claimType }
+      if let clickDate = appleAds.clickDate { apple["clickDate"] = clickDate }
+      if let impressionDate = appleAds.impressionDate { apple["impressionDate"] = impressionDate }
       if let conversion = appleAds.conversionType { apple["conversionType"] = conversion }
+      if let supplyPlacement = appleAds.supplyPlacement { apple["supplyPlacement"] = supplyPlacement }
       dict["appleAds"] = apple
     }
     if let utmSource = attr.utmSource { dict["utmSource"] = utmSource }
@@ -248,5 +259,28 @@ class AppSprintBridge: NSObject {
     if let utmContent = attr.utmContent { dict["utmContent"] = utmContent }
     if let utmTerm = attr.utmTerm { dict["utmTerm"] = utmTerm }
     return dict
+  }
+
+  private static func googleAdsConsent(from value: Any?) -> GoogleAdsConsent? {
+    let dict: [String: Any]?
+    if let typed = value as? [String: Any] {
+      dict = typed
+    } else if let nsDict = value as? NSDictionary {
+      dict = nsDict as? [String: Any]
+    } else {
+      dict = nil
+    }
+
+    guard let dict, let status = googleAdsConsentStatus(from: dict["adUserData"]) else {
+      return nil
+    }
+    return GoogleAdsConsent(adUserData: status)
+  }
+
+  private static func googleAdsConsentStatus(from value: Any?) -> GoogleAdsConsentStatus? {
+    guard let raw = value as? String else {
+      return nil
+    }
+    return GoogleAdsConsentStatus(rawValue: raw.trimmingCharacters(in: .whitespacesAndNewlines).uppercased())
   }
 }

@@ -38,13 +38,18 @@ test("configure delegates to native module", async () => {
   const ctx = createSdkTestContext();
 
   try {
-    const configured = await ctx.sdk.AppSprint.configure({ apiKey: "test-key", isDebug: true });
+    const configured = await ctx.sdk.AppSprint.configure({
+      apiKey: "test-key",
+      isDebug: true,
+      googleAdsConsent: { adUserData: "GRANTED" },
+    });
 
     const configCall = ctx.calls.find((c) => c.method === "configure");
     assert.ok(configCall, "configure was called on native module");
     assert.equal(configured, true);
     assert.equal(configCall.args[0].apiKey, "test-key");
     assert.equal(configCall.args[0].isDebug, true);
+    assert.deepEqual(configCall.args[0].googleAdsConsent, { adUserData: "GRANTED" });
     assert.equal(configCall.args[0].autoTrackSessions, undefined);
     assert.equal(configCall.args[0].autoRefreshAttribution, undefined);
   } finally {
@@ -84,6 +89,7 @@ test("sendEvent delegates with correct parameters", async () => {
       revenue: 4.99,
       currency: "USD",
       source: "test",
+      googleAdsConsent: { adUserData: "DENIED" },
     });
 
     const sendCall = ctx.calls.find((c) => c.method === "sendEvent");
@@ -97,6 +103,7 @@ test("sendEvent delegates with correct parameters", async () => {
       revenue: 4.99,
       currency: "USD",
       source: "test",
+      googleAdsConsent: { adUserData: "DENIED" },
     });
   } finally {
     ctx.restore();

@@ -3,15 +3,22 @@ package com.appsprint
 import com.appsprint.sdk.AppSprint
 import com.appsprint.sdk.AppSprintConfig
 import com.appsprint.sdk.AppSprintEventType
+import com.appsprint.sdk.AppSprintNative
 import com.appsprint.sdk.AttributionResult
+import com.appsprint.sdk.GoogleAdsConsent
+import com.appsprint.sdk.GoogleAdsConsentStatus
 import com.facebook.react.bridge.*
-import kotlin.concurrent.thread
+import java.util.concurrent.ExecutorService
+import java.util.concurrent.Executors
 
 class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContextBaseJavaModule(reactContext) {
 
     override fun getName(): String = "AppSprintModule"
 
     @Volatile private var cachedSdk: AppSprint? = null
+    private val bridgeExecutor: ExecutorService = Executors.newSingleThreadExecutor { runnable ->
+        Thread(runnable, "AppSprintRNBridge").apply { isDaemon = true }
+    }
 
     private fun sdk(): AppSprint {
         cachedSdk?.let { return it }
@@ -34,7 +41,7 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
     }
 
     private fun runAsync(code: String, promise: Promise, block: () -> Unit) {
-        thread(start = true) {
+        bridgeExecutor.execute {
             try {
                 block()
             } catch (t: Throwable) {
@@ -75,6 +82,7 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
                 customerUserId = if (config.hasKey("customerUserId")) config.getString("customerUserId") else null,
                 autoTrackSessions = if (config.hasKey("autoTrackSessions")) config.getBoolean("autoTrackSessions") else true,
                 autoRefreshAttribution = if (config.hasKey("autoRefreshAttribution")) config.getBoolean("autoRefreshAttribution") else true,
+                googleAdsConsent = googleAdsConsentFrom(config),
             )
             sdk().configure(sdkConfig)
             promise.resolve(true)
@@ -180,10 +188,16 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
         attr.appleAds?.let {
             val appleAds = Arguments.createMap()
             appleAds.putString("campaignId", it.campaignId)
+            it.orgId?.let { value -> appleAds.putString("orgId", value) }
             it.adGroupId?.let { value -> appleAds.putString("adGroupId", value) }
             it.keywordId?.let { value -> appleAds.putString("keywordId", value) }
+            it.adId?.let { value -> appleAds.putString("adId", value) }
             it.countryOrRegion?.let { value -> appleAds.putString("countryOrRegion", value) }
+            it.claimType?.let { value -> appleAds.putString("claimType", value) }
+            it.clickDate?.let { value -> appleAds.putString("clickDate", value) }
+            it.impressionDate?.let { value -> appleAds.putString("impressionDate", value) }
             it.conversionType?.let { value -> appleAds.putString("conversionType", value) }
+            it.supplyPlacement?.let { value -> appleAds.putString("supplyPlacement", value) }
             map.putMap("appleAds", appleAds)
         }
         attr.utmSource?.let { map.putString("utmSource", it) }
@@ -192,6 +206,22 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
         attr.utmContent?.let { map.putString("utmContent", it) }
         attr.utmTerm?.let { map.putString("utmTerm", it) }
         return map
+    }
+
+    private fun googleAdsConsentFrom(config: ReadableMap): GoogleAdsConsent? {
+        if (!config.hasKey("googleAdsConsent") || config.isNull("googleAdsConsent")) return null
+        val consent = config.getMap("googleAdsConsent") ?: return null
+        if (!consent.hasKey("adUserData") || consent.isNull("adUserData")) return null
+        if (consent.getType("adUserData") != ReadableType.String) return null
+        return googleAdsConsentStatus(consent.getString("adUserData"))
+            ?.let { GoogleAdsConsent(it) }
+    }
+
+    private fun googleAdsConsentStatus(value: String?): GoogleAdsConsentStatus? {
+        val normalized = value?.trim()?.uppercase(java.util.Locale.US) ?: return null
+        return GoogleAdsConsentStatus.entries.firstOrNull {
+            it.wireValue == normalized || it.name == normalized
+        }
     }
 
     @ReactMethod
@@ -216,18 +246,18 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
 
     @ReactMethod
     fun getDeviceInfo(promise: Promise) {
-        try {
+        runAsync("DEVICE_INFO_ERROR", promise) {
+            val deviceInfo = AppSprintNative(reactApplicationContext).getDeviceInfo(includeAdvertisingId = true)
             val info = Arguments.createMap()
-            info.putString("deviceModel", android.os.Build.MODEL)
-            val metrics = reactApplicationContext.resources.displayMetrics
-            info.putInt("screenWidth", metrics.widthPixels)
-            info.putInt("screenHeight", metrics.heightPixels)
-            info.putString("locale", java.util.Locale.getDefault().toLanguageTag())
-            info.putString("timezone", java.util.TimeZone.getDefault().id)
-            info.putString("osVersion", android.os.Build.VERSION.RELEASE)
+            deviceInfo.deviceModel?.let { info.putString("deviceModel", it) }
+            deviceInfo.screenWidth?.let { info.putInt("screenWidth", it) }
+            deviceInfo.screenHeight?.let { info.putInt("screenHeight", it) }
+            deviceInfo.locale?.let { info.putString("locale", it) }
+            deviceInfo.timezone?.let { info.putString("timezone", it) }
+            deviceInfo.osVersion?.let { info.putString("osVersion", it) }
+            deviceInfo.appVersion?.let { info.putString("appVersion", it) }
+            deviceInfo.gaid?.let { info.putString("gaid", it) }
             promise.resolve(info)
-        } catch (e: Exception) {
-            promise.reject("DEVICE_INFO_ERROR", e.message, e)
         }
     }
 
@@ -238,6 +268,11 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
 
     @ReactMethod
     fun requestTrackingAuthorization(promise: Promise) {
-        promise.resolve(false) // iOS only
+        promise.resolve(AppSprintNative(reactApplicationContext).requestTrackingAuthorization())
+    }
+
+    override fun invalidate() {
+        bridgeExecutor.shutdown()
+        super.invalidate()
     }
 }
