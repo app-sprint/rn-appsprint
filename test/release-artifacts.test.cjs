@@ -36,6 +36,22 @@ test("package metadata reflects the binary-backed distribution contract", () => 
   assert.deepEqual(packageJson.expo?.plugins, ["./app.plugin.js"]);
 });
 
+test("podspec resolves npm repository metadata to a CocoaPods git URL", () => {
+  const podspec = fs.readFileSync(
+    path.join(projectRoot, "appsprint-react-native.podspec"),
+    "utf8"
+  );
+
+  assert.match(podspec, /repository_url = repository\.is_a\?\(Hash\) \? repository\["url"\] : repository/);
+  assert.equal(
+    podspec.includes('repository_url = repository_url&.sub(/^git\\+/, "")'),
+    true,
+    "podspec should strip npm's git+ URL prefix"
+  );
+  assert.match(podspec, /:git => repository_url/);
+  assert.match(podspec, /:tag => "v#\{s\.version\}"/);
+});
+
 test("android permissions are packaged for consumers", () => {
   const manifest = fs.readFileSync(
     path.join(projectRoot, "android/src/main/AndroidManifest.xml"),

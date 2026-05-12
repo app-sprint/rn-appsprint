@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.0.4 - 2026-05-12
+
+### Fixed
+- Fixed the iOS podspec source metadata so CocoaPods receives a string git URL instead of npm's repository object.
+- Stripped npm's `git+` repository URL prefix and aligned the podspec tag with `v*` release tags.
+
 ## 1.0.3 - 2026-05-12
 
 ### Changed

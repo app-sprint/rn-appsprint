@@ -35,4 +35,19 @@ if (!pluginEntries.includes("./app.plugin.js")) {
   process.exit(1);
 }
 
+const podspec = fs.readFileSync(
+  path.join(projectRoot, "appsprint-react-native.podspec"),
+  "utf8"
+);
+
+if (!podspec.includes(":git => repository_url")) {
+  console.error("podspec must pass a string repository URL to CocoaPods :git.");
+  process.exit(1);
+}
+
+if (!podspec.includes(':tag => "v#{s.version}"')) {
+  console.error("podspec source tag must match v-prefixed GitHub release tags.");
+  process.exit(1);
+}
+
 console.log("Release artifacts validated.");
