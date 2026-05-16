@@ -16,6 +16,7 @@ type AndroidManifest = {
 
 const ANDROID_PERMISSIONS = [
   "android.permission.INTERNET",
+  "android.permission.ACCESS_NETWORK_STATE",
   "com.google.android.gms.permission.AD_ID",
 ];
 

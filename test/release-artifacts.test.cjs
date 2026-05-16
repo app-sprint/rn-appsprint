@@ -64,6 +64,8 @@ test("android permissions are packaged for consumers", () => {
 
   assert.match(manifest, /android\.permission\.INTERNET/);
   assert.match(plugin, /android\.permission\.INTERNET/);
+  assert.match(manifest, /android\.permission\.ACCESS_NETWORK_STATE/);
+  assert.match(plugin, /android\.permission\.ACCESS_NETWORK_STATE/);
   assert.match(manifest, /com\.google\.android\.gms\.permission\.AD_ID/);
   assert.match(plugin, /com\.google\.android\.gms\.permission\.AD_ID/);
 

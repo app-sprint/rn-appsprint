@@ -5,6 +5,12 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 1.1.0 - 2026-05-17
+
+### Added
+- Updated vendored native SDKs to iOS v1.1.0 and Android v1.1.0.
+- Exposed enriched `getDeviceInfo()` fields including native screen size, screen scale, CPU count, memory bucket, preferred languages, timezone offset, battery/network/carrier metadata, GPU renderer, and SDK version where platform-available.
+
 ## 1.0.4 - 2026-05-12
 
 ### Fixed

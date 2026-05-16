@@ -31,7 +31,7 @@ The native pod is vendored inside the package, so no extra repository setup is n
 
 ### Android
 
-Auto-linking handles the Android side. The package's manifest declares `INTERNET` and `com.google.android.gms.permission.AD_ID`, which merge into your app at build time.
+Auto-linking handles the Android side. The package's manifest declares `INTERNET`, `ACCESS_NETWORK_STATE`, and `com.google.android.gms.permission.AD_ID`, which merge into your app at build time.
 
 ### Expo
 
@@ -218,7 +218,7 @@ The native Android SDK reads GAID during install registration, off the main thre
 
 The vendored iOS framework ships a `PrivacyInfo.xcprivacy` manifest declaring `UserDefaults` access plus `DeviceID`, `ProductInteraction`, `UserID`, `CoarseLocation`, and `OtherDataTypes` collection, all marked `Tracking: true`, with `api.appsprint.app` listed as a tracking domain.
 
-For Android, include advertising ID collection, device IDs, app activity, and (if you set `customerUserId`) user ID in your Play Console Data safety answers.
+For Android, include advertising ID collection, device IDs, approximate location/network-derived country, device or other identifiers, app activity, and (if you set `customerUserId`) user ID in your Play Console Data safety answers.
 
 Don't pass raw PII through `params` or `customerUserId`. Both persist to native storage for retry durability. Use hashed or opaque identifiers instead (SHA-256 of an email, RevenueCat or Superwall `app_user_id`, your internal user UUID).
 
@@ -265,7 +265,7 @@ import { AppSprint } from "appsprint-react-native";
 import { NativeAppSprint } from "appsprint-react-native";
 ```
 
-- `getDeviceInfo()` returns the device fingerprint payload.
+- `getDeviceInfo()` returns the attribution device signal payload.
 - `getAdServicesToken()` returns Apple's AdServices token on iOS; `null` on Android.
 - `requestTrackingAuthorization()` shows the ATT prompt on iOS; resolves `true` on Android.
 

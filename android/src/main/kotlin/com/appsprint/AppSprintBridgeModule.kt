@@ -252,6 +252,36 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
             deviceInfo.deviceModel?.let { info.putString("deviceModel", it) }
             deviceInfo.screenWidth?.let { info.putInt("screenWidth", it) }
             deviceInfo.screenHeight?.let { info.putInt("screenHeight", it) }
+            deviceInfo.nativeScreenWidth?.let { info.putInt("nativeScreenWidth", it) }
+            deviceInfo.nativeScreenHeight?.let { info.putInt("nativeScreenHeight", it) }
+            deviceInfo.screenScale?.let { info.putDouble("screenScale", it) }
+            deviceInfo.hardwareConcurrency?.let { info.putInt("hardwareConcurrency", it) }
+            deviceInfo.processorCount?.let { info.putInt("processorCount", it) }
+            deviceInfo.maxTouchPoints?.let { info.putInt("maxTouchPoints", it) }
+            deviceInfo.memoryGb?.let { info.putInt("memoryGb", it) }
+            deviceInfo.lowPowerMode?.let { info.putBoolean("lowPowerMode", it) }
+            deviceInfo.batteryState?.let { info.putString("batteryState", it) }
+            deviceInfo.batteryLevelBucket?.let { info.putString("batteryLevelBucket", it) }
+            deviceInfo.preferredLanguages?.let { languages ->
+                val array = Arguments.createArray()
+                languages.forEach { array.pushString(it) }
+                info.putArray("preferredLanguages", array)
+            }
+            deviceInfo.timezoneOffsetMinutes?.let { info.putInt("timezoneOffsetMinutes", it) }
+            deviceInfo.deviceManufacturer?.let { info.putString("deviceManufacturer", it) }
+            deviceInfo.deviceBrand?.let { info.putString("deviceBrand", it) }
+            deviceInfo.deviceProduct?.let { info.putString("deviceProduct", it) }
+            deviceInfo.deviceHardware?.let { info.putString("deviceHardware", it) }
+            deviceInfo.gpuVendor?.let { info.putString("gpuVendor", it) }
+            deviceInfo.gpuRenderer?.let { info.putString("gpuRenderer", it) }
+            deviceInfo.connectionType?.let { info.putString("connectionType", it) }
+            deviceInfo.networkType?.let { info.putString("networkType", it) }
+            deviceInfo.carrierName?.let { info.putString("carrierName", it) }
+            deviceInfo.carrierCountryCode?.let { info.putString("carrierCountryCode", it) }
+            deviceInfo.mobileCountryCode?.let { info.putString("mobileCountryCode", it) }
+            deviceInfo.mobileNetworkCode?.let { info.putString("mobileNetworkCode", it) }
+            deviceInfo.sdkPlatform?.let { info.putString("sdkPlatform", it) }
+            deviceInfo.sdkVersion?.let { info.putString("sdkVersion", it) }
             deviceInfo.locale?.let { info.putString("locale", it) }
             deviceInfo.timezone?.let { info.putString("timezone", it) }
             deviceInfo.osVersion?.let { info.putString("osVersion", it) }
