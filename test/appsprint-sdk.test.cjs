@@ -322,6 +322,25 @@ test("sendTestEvent delegates to native module", async () => {
   }
 });
 
+test("getDeviceInfo returns enriched native connection fields", async () => {
+  const deviceInfo = {
+    deviceModel: "iPhone15,2",
+    connectionType: "cellular",
+    networkType: "5g",
+    sdkVersion: "1.1.1",
+  };
+  const ctx = createSdkTestContext({
+    resolvedValues: { getDeviceInfo: deviceInfo },
+  });
+
+  try {
+    const result = await ctx.sdk.NativeAppSprint.getDeviceInfo();
+    assert.deepEqual(result, deviceInfo);
+  } finally {
+    ctx.restore();
+  }
+});
+
 test("flush delegates to native module", async () => {
   const ctx = createSdkTestContext();
 
