@@ -159,6 +159,7 @@ export interface DeviceInfo {
   mobileNetworkCode?: string;
   sdkPlatform?: string;
   sdkVersion?: string;
+  sdkWebViewUserAgent?: string;
   locale?: string;
   timezone?: string;
   osVersion?: string;
@@ -195,6 +196,7 @@ export interface NativeAppSprintModule {
 
   // Utility
   getDeviceInfo(): Promise<DeviceInfo>;
+  getWebViewUserAgent?(): Promise<string | null>;
   getAdServicesToken(): Promise<string | null>;
   requestTrackingAuthorization(): Promise<boolean>;
 }

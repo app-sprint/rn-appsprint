@@ -67,6 +67,10 @@ function createSdkTestContext(options = {}) {
       calls.push({ method: "getDeviceInfo", args: [] });
       return resolvedValues.getDeviceInfo ?? { deviceModel: "iPhone15,2", locale: "en-US" };
     },
+    async getWebViewUserAgent() {
+      calls.push({ method: "getWebViewUserAgent", args: [] });
+      return resolvedValues.getWebViewUserAgent ?? null;
+    },
     async getAdServicesToken() {
       calls.push({ method: "getAdServicesToken", args: [] });
       return resolvedValues.getAdServicesToken ?? null;

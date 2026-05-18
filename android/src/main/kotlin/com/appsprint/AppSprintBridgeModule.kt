@@ -283,12 +283,23 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
             deviceInfo.mobileNetworkCode?.let { info.putString("mobileNetworkCode", it) }
             deviceInfo.sdkPlatform?.let { info.putString("sdkPlatform", it) }
             deviceInfo.sdkVersion?.let { info.putString("sdkVersion", it) }
+            deviceInfo.sdkWebViewUserAgent?.let { info.putString("sdkWebViewUserAgent", it) }
             deviceInfo.locale?.let { info.putString("locale", it) }
             deviceInfo.timezone?.let { info.putString("timezone", it) }
             deviceInfo.osVersion?.let { info.putString("osVersion", it) }
             deviceInfo.appVersion?.let { info.putString("appVersion", it) }
             deviceInfo.gaid?.let { info.putString("gaid", it) }
             promise.resolve(info)
+        }
+    }
+
+    @ReactMethod
+    fun getWebViewUserAgent(promise: Promise) {
+        runAsync("WEBVIEW_USER_AGENT_ERROR", promise) {
+            val userAgent = AppSprintNative(reactApplicationContext)
+                .getDeviceInfo(includeAdvertisingId = false)
+                .sdkWebViewUserAgent
+            promise.resolve(userAgent)
         }
     }
 

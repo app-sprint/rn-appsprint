@@ -25,10 +25,27 @@ test("exports the documented public API", async () => {
     assert.equal(typeof ctx.sdk.AppSprint.isSdkDisabled, "function");
     assert.equal(typeof ctx.sdk.AppSprint.destroy, "function");
     assert.equal(typeof ctx.sdk.NativeAppSprint.getDeviceInfo, "function");
+    assert.equal(typeof ctx.sdk.NativeAppSprint.getWebViewUserAgent, "function");
     assert.equal(typeof ctx.sdk.NativeAppSprint.requestTrackingAuthorization, "function");
     assert.equal("storageSet" in ctx.sdk.NativeAppSprint, false);
     assert.equal("storageGet" in ctx.sdk.NativeAppSprint, false);
     assert.equal("storageRemove" in ctx.sdk.NativeAppSprint, false);
+  } finally {
+    ctx.restore();
+  }
+});
+
+test("native WebView user-agent helper is available for diagnostics", async () => {
+  const userAgent = "Mozilla/5.0 (iPhone; CPU iPhone OS 18_7 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148";
+  const ctx = createSdkTestContext({
+    resolvedValues: { getWebViewUserAgent: userAgent },
+  });
+
+  try {
+    const result = await ctx.sdk.NativeAppSprint.getWebViewUserAgent();
+    const call = ctx.calls.find((c) => c.method === "getWebViewUserAgent");
+    assert.ok(call, "getWebViewUserAgent was called on native module");
+    assert.equal(result, userAgent);
   } finally {
     ctx.restore();
   }
@@ -328,7 +345,7 @@ test("getDeviceInfo returns enriched native connection fields", async () => {
     connectionType: "cellular",
     networkType: "5g",
     colorScheme: "dark",
-    sdkVersion: "1.1.2",
+    sdkVersion: "1.1.3",
   };
   const ctx = createSdkTestContext({
     resolvedValues: { getDeviceInfo: deviceInfo },

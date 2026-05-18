@@ -101,6 +101,7 @@ export interface DeviceInfo {
     mobileNetworkCode?: string;
     sdkPlatform?: string;
     sdkVersion?: string;
+    sdkWebViewUserAgent?: string;
     locale?: string;
     timezone?: string;
     osVersion?: string;
@@ -127,6 +128,7 @@ export interface NativeAppSprintModule {
     isSdkDisabled(): Promise<boolean>;
     destroy(): Promise<void>;
     getDeviceInfo(): Promise<DeviceInfo>;
+    getWebViewUserAgent?(): Promise<string | null>;
     getAdServicesToken(): Promise<string | null>;
     requestTrackingAuthorization(): Promise<boolean>;
 }

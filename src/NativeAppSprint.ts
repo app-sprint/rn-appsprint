@@ -43,6 +43,9 @@ const unsupportedPlatformModule: NativeAppSprintModule = {
   async getDeviceInfo() {
     return {};
   },
+  async getWebViewUserAgent() {
+    return null;
+  },
   async getAdServicesToken() {
     return null;
   },

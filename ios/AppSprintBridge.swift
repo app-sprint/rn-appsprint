@@ -198,6 +198,12 @@ class AppSprintBridge: NSObject {
                            rejecter reject: @escaping RCTPromiseRejectBlock) {
     Task { @MainActor in
       let info = AppSprintNative.getDeviceInfo()
+      let sdkWebViewUserAgent: String?
+      if let userAgent = info.sdkWebViewUserAgent {
+        sdkWebViewUserAgent = userAgent
+      } else {
+        sdkWebViewUserAgent = await AppSprintNative.getWebViewUserAgent()
+      }
       var dict: [String: Any] = [:]
       if let m = info.deviceModel { dict["deviceModel"] = m }
       if let w = info.screenWidth { dict["screenWidth"] = w }
@@ -229,6 +235,7 @@ class AppSprintBridge: NSObject {
       if let value = info.mobileNetworkCode { dict["mobileNetworkCode"] = value }
       if let value = info.sdkPlatform { dict["sdkPlatform"] = value }
       if let value = info.sdkVersion { dict["sdkVersion"] = value }
+      if let value = sdkWebViewUserAgent { dict["sdkWebViewUserAgent"] = value }
       if let l = info.locale { dict["locale"] = l }
       if let t = info.timezone { dict["timezone"] = t }
       if let o = info.osVersion { dict["osVersion"] = o }
@@ -238,6 +245,14 @@ class AppSprintBridge: NSObject {
       if let token = info.adServicesToken { dict["adServicesToken"] = token }
       if let attStatus = info.attStatus { dict["attStatus"] = attStatus.rawValue }
       resolve(dict)
+    }
+  }
+
+  @objc func getWebViewUserAgent(_ resolve: @escaping RCTPromiseResolveBlock,
+                                 rejecter reject: @escaping RCTPromiseRejectBlock) {
+    Task { @MainActor in
+      let userAgent = await AppSprintNative.getWebViewUserAgent()
+      resolve(userAgent as Any)
     }
   }
 
