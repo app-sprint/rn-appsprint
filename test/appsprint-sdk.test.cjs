@@ -327,6 +327,7 @@ test("getDeviceInfo returns enriched native connection fields", async () => {
     deviceModel: "iPhone15,2",
     connectionType: "cellular",
     networkType: "5g",
+    colorScheme: "dark",
     sdkVersion: "1.1.1",
   };
   const ctx = createSdkTestContext({

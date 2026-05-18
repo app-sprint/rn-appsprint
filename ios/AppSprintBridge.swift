@@ -222,6 +222,7 @@ class AppSprintBridge: NSObject {
       if let value = info.gpuRenderer { dict["gpuRenderer"] = value }
       if let value = info.connectionType { dict["connectionType"] = value }
       if let value = info.networkType { dict["networkType"] = value }
+      if let value = info.colorScheme { dict["colorScheme"] = value }
       if let value = info.carrierName { dict["carrierName"] = value }
       if let value = info.carrierCountryCode { dict["carrierCountryCode"] = value }
       if let value = info.mobileCountryCode { dict["mobileCountryCode"] = value }

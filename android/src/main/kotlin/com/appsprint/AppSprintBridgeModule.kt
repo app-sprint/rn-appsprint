@@ -276,6 +276,7 @@ class AppSprintBridgeModule(reactContext: ReactApplicationContext) : ReactContex
             deviceInfo.gpuRenderer?.let { info.putString("gpuRenderer", it) }
             deviceInfo.connectionType?.let { info.putString("connectionType", it) }
             deviceInfo.networkType?.let { info.putString("networkType", it) }
+            deviceInfo.colorScheme?.let { info.putString("colorScheme", it) }
             deviceInfo.carrierName?.let { info.putString("carrierName", it) }
             deviceInfo.carrierCountryCode?.let { info.putString("carrierCountryCode", it) }
             deviceInfo.mobileCountryCode?.let { info.putString("mobileCountryCode", it) }

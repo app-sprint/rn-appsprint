@@ -94,6 +94,7 @@ export interface DeviceInfo {
     gpuRenderer?: string;
     connectionType?: string;
     networkType?: string;
+    colorScheme?: "light" | "dark";
     carrierName?: string;
     carrierCountryCode?: string;
     mobileCountryCode?: string;
