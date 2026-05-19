@@ -1,6 +1,6 @@
 {
   "name": "appsprint-react-native",
-  "version": "1.1.6",
+  "version": "1.1.7",
   "description": "AppSprint mobile attribution SDK for React Native",
   "main": "lib/commonjs/index.js",
   "module": "lib/module/index.js",
@@ -29,7 +29,13 @@
     "validate:release": "node scripts/validate-release-artifacts.cjs",
     "prepack": "npm run validate:release"
   },
-  "keywords": ["react-native", "attribution", "mobile", "analytics", "appsprint"],
+  "keywords": [
+    "react-native",
+    "attribution",
+    "mobile",
+    "analytics",
+    "appsprint"
+  ],
   "repository": {
     "type": "git",
     "url": "git+https://github.com/getappsprint/appsprint-react-native.git"
@@ -51,9 +57,15 @@
   "react-native-builder-bob": {
     "source": "src",
     "output": "lib",
-    "targets": ["commonjs", "module", "typescript"]
+    "targets": [
+      "commonjs",
+      "module",
+      "typescript"
+    ]
   },
   "expo": {
-    "plugins": ["./app.plugin.js"]
+    "plugins": [
+      "./app.plugin.js"
+    ]
   }
 }
